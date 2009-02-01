@@ -6,10 +6,10 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "meta"
-    s.summary = %Q{TODO}
-    s.email = "justin@geni.com"
+    s.summary = %Q{Meta-programming helper methods.}
+    s.email = "code@justinbalthrop.com"
     s.homepage = "http://github.com/ninjudd/meta"
-    s.description = "TODO"
+    s.description = "Useful meta-programming extensions for Ruby."
     s.authors = ["Justin Balthrop"]
   end
 rescue LoadError
