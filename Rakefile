@@ -6,12 +6,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "meta"
-    s.summary = %Q{Meta-programming helper methods.}
+    s.summary = %Q{Ruby meta programming helpers.}
     s.email = "code@justinbalthrop.com"
     s.homepage = "http://github.com/ninjudd/meta"
-    s.description = "Useful meta-programming extensions for Ruby."
+    s.description = "Useful meta-programming extensions and more for Ruby."
     s.authors = ["Justin Balthrop"]
   end
+  Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
 end

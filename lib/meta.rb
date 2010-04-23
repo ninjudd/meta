@@ -7,7 +7,7 @@ class Module
       end
     end
   end
-  
+
   def bool_accessor(*attrs)
     attrs.each do |attr|
       attr_writer(attr)
@@ -15,7 +15,7 @@ class Module
     end
   end
 
-  def instance_class_methods(*method_names)
+  def instance_class_method(*method_names)
     method_names.each do |method_name|
       define_method(method_name) do
         self.class.send(method_name)
@@ -23,25 +23,35 @@ class Module
     end
   end
 
-  def inheritable_class_attr(attribute, &block)
-    accessor = "_#{attribute}"
-    meta_def attribute do |*args|
-      if args.empty?
-        send(accessor)
-      else
-        meta_def accessor do
-          block ? block.call(args.first) : args.first
+  def inheritable_class_attr(*attributes, &block)
+    attributes.each do |attribute|
+      accessor = "_#{attribute}"
+      meta_def(attribute) do |*args|
+        if args.empty?
+          send(accessor)
+        else
+          # If the block takes an argument, use it as a filter.
+          if block and block.arity == 1
+            meta_def(accessor) { block.call(args.first) }
+          else
+            meta_def(accessor) { args.first }
+          end
         end
+      end
+
+      # Default value.
+      if block and block.arity < 1
+        meta_def(accessor, &block)
       end
     end
   end
 
   def subfield_accessors(field, subfields)
     subfields.each do |subfield, index|
-      define_method(subfield) do 
+      define_method(subfield) do
         self.send(field)[index]
       end
-      
+
       define_method("#{subfield}=") do |value|
         self.send(field)[index] = value
       end
@@ -69,7 +79,6 @@ class Module
       send("#{field}=", reverse_mapping[value])
     end
   end
-
 end
 
 class Object
@@ -82,10 +91,25 @@ class Object
   def meta_def name, &blk
     meta_eval { define_method name, &blk }
   end
-  
+
   # Defines an instance method within a class
   def class_def name, &blk
     class_eval { define_method name, &blk }
   end
   ##
+end
+
+module Enumerable
+  def apply(*method_names)
+    self.collect do |item|
+      method_names.each do |method_name|
+        if item.kind_of?(Hash) and (['id', :id].include?(method_name) or not item.respond_to?(method_name))
+          item = item[method_name]
+        else
+          item = item.send(method_name)
+        end
+      end
+      item
+    end
+  end
 end
